@@ -1,3 +1,4 @@
+import { AnimationEasing } from '../springs/AnimationEasing';
 import SmoothSpring from '../springs/SmoothSpring';
 import Animation from './Animation';
 import interpolateAnimation from './AnimationInterpolation';
@@ -15,6 +16,7 @@ export interface RotateOptions extends AnimationOptions {
   degrees: number;
   /** The proportional rotation angle that is used at the start of the animation. _Defaults to `0`._ */
   initial?: number;
+  easing?: (t: number) => number;
 }
 
 /**
@@ -24,7 +26,15 @@ const Rotate = (options: RotateOptions): Animation => {
   return {
     in: options.start ?? 0,
     valuesAt: (frame: number, fps: number) => {
-      const spring = SmoothSpring(frame, fps, options);
+      const spring = options.easing
+        ? AnimationEasing({
+            frame,
+            start: options.start ?? 0,
+            duration: options.duration ?? 1,
+            easing: options.easing,
+          })
+        : SmoothSpring(frame, fps, options);
+
       const initial = options.initial ?? 1;
 
       const rotate = interpolateAnimation(spring, options.degrees, initial);

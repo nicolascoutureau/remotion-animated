@@ -1,7 +1,9 @@
+import { AnimationEasing } from '../springs/AnimationEasing';
 import SmoothSpring from '../springs/SmoothSpring';
 import Animation from './Animation';
 import interpolateAnimation from './AnimationInterpolation';
 import AnimationOptions from './AnimationOptions';
+import { clamp } from './utils';
 
 export interface MoveOptions extends AnimationOptions {
   /** The element will be moved to the right by this amount (in pixels). */
@@ -12,6 +14,7 @@ export interface MoveOptions extends AnimationOptions {
   initialX?: number;
   /** The y position offset that is used at the start of the animation (in pixels). Defaults to `0`. */
   initialY?: number;
+  easing?: (t: number) => number;
 }
 
 /**
@@ -21,7 +24,14 @@ const Move = (options: MoveOptions): Animation => {
   return {
     in: options.start ?? 0,
     valuesAt: (frame: number, fps: number) => {
-      const spring = SmoothSpring(frame, fps, options);
+      const spring = options.easing
+        ? AnimationEasing({
+            frame,
+            start: options.start ?? 0,
+            duration: options.duration ?? 1,
+            easing: options.easing,
+          })
+        : SmoothSpring(frame, fps, options);
 
       const translateX = interpolateAnimation(
         spring,

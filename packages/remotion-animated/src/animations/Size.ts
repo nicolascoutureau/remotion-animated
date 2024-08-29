@@ -1,4 +1,5 @@
 import AnimationValues from '../reducer/AnimationValues';
+import { AnimationEasing } from '../springs/AnimationEasing';
 import SmoothSpring from '../springs/SmoothSpring';
 import Animation from './Animation';
 import interpolateAnimation from './AnimationInterpolation';
@@ -13,6 +14,7 @@ export interface SizeOptions extends AnimationOptions {
   initialWidth?: number;
   /** The height that is used at the start of the animation. Defaults to `0`. */
   initialHeight?: number;
+  easing?: (t: number) => number;
 }
 
 /**
@@ -23,7 +25,14 @@ const Size = (options: SizeOptions): Animation => {
     in: options.start ?? 0,
     valuesAt: (frame: number, fps: number) => {
       const values: AnimationValues = {};
-      const spring = SmoothSpring(frame, fps, options);
+      const spring = options.easing
+        ? AnimationEasing({
+            frame,
+            start: options.start ?? 0,
+            duration: options.duration ?? 1,
+            easing: options.easing,
+          })
+        : SmoothSpring(frame, fps, options);
 
       if (options.width)
         values.width = interpolateAnimation(

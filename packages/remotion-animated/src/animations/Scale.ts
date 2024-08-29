@@ -1,3 +1,4 @@
+import { AnimationEasing } from '../springs/AnimationEasing';
 import SmoothSpring from '../springs/SmoothSpring';
 import Animation from './Animation';
 import interpolateAnimation from './AnimationInterpolation';
@@ -23,6 +24,7 @@ export interface ScaleOptions extends AnimationOptions {
   initialX?: number;
   /** The y scale factor that is used at the start of the animation. _Defaults to the value of `initial`._ */
   initialY?: number;
+  easing?: (t: number) => number;
 }
 
 /**
@@ -32,7 +34,14 @@ const Scale = (options: ScaleOptions): Animation => {
   return {
     in: options.start ?? 0,
     valuesAt: (frame: number, fps: number) => {
-      const spring = SmoothSpring(frame, fps, options);
+      const spring = options.easing
+        ? AnimationEasing({
+            frame,
+            start: options.start ?? 0,
+            duration: options.duration ?? 1,
+            easing: options.easing,
+          })
+        : SmoothSpring(frame, fps, options);
 
       const initial = options.initial ?? 1;
       const initialX = options.initialX ?? initial;
