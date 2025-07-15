@@ -21,6 +21,8 @@ export interface AnimatedProps {
   children?: React.ReactNode;
   /** Styles that are applied to the animation container. */
   style?: React.CSSProperties;
+  /** Current frame number. */
+  frame: number;
 }
 
 const animatedStylesFromAnimations = (
@@ -42,7 +44,7 @@ const animatedStylesFromAnimations = (
  * The `Animated` component renders a container that can be animated.
  */
 const Animated = (props: AnimatedProps) => {
-  const frame = useCurrentFrame();
+  const frame = props.frame;
   const { fps } = useVideoConfig();
   const { animations } = props;
 
