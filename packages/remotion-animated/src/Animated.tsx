@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useCurrentFrame, useVideoConfig } from 'remotion';
+import { useVideoConfig } from 'remotion';
 import Animation from './animations/Animation';
 import reduceComputedValues from './reducer/AnimationReducer';
 import stylesFromValues from './styles/AnimatedStyles';
